@@ -35,6 +35,23 @@
 
 ---
 
+## 已发布
+
+- 仓库：https://github.com/AllenRSI/quadruped-stack-survey （public，main）
+- Pages：https://allenrsi.github.io/quadruped-stack-survey/ （main 分支根目录，构建状态已验证 `built`）
+- 报告页：https://allenrsi.github.io/quadruped-stack-survey/report.html
+- 站点 = `index.html`（可视化首页）+ `report.html`（报告静态页）+ `.nojekyll`
+- `report.html` 由 `tools/md2html.ps1` 从 `report.md` 生成。改完 report.md 后重跑：
+
+```powershell
+$src=[System.IO.File]::ReadAllText("$PWD\tools\md2html.ps1",[System.Text.Encoding]::UTF8)
+& ([scriptblock]::Create($src)) -In "$PWD\report.md" -Out "$PWD\report.html"
+```
+
+（本机执行策略禁止直接跑 .ps1，要用 scriptblock 绕过；**且必须用 pwsh 7，不能用 `powershell`——5.1 解析器会报错**。）
+
+---
+
 ## 踩过的坑，别再踩
 
 1. **init-project.ps1 执行策略被禁** —— 用 `powershell -ExecutionPolicy Bypass -File`。
@@ -42,6 +59,9 @@
 3. **PowerShell 读 UTF-8 文件会误判标签** —— `Get-Content -Raw` 默认可能按 ANSI 解，导致中文尾字符吃掉 `<`，把 166/166 的 div 数成 166/138。**必须加 `-Encoding UTF8` 或 `[System.IO.File]::ReadAllText(..., Encoding::UTF8)`。**
 4. **调研员会把知识停在 2024** —— 本轮已要求查 2025-2026，实际抓到 DAWN / StairMaster / LocoWM / From Tabletop to Walking Bot 等。
 5. **任务书里我写错了三个工作名**（Quadruped-Frontier、VBC、LeggedLoco；AnyBody 实为人形）—— 已被 researcher-vla 揪出并清理，后续派活别再引用。
+6. **`powershell`(5.1) 与 `pwsh`(7) 解析器行为不同** —— 同一脚本 pwsh 零错误、5.1 报 unexpected token。跑 .ps1 一律用 pwsh。
+7. **本机无 gh CLI** —— GitHub 操作走 REST API + `curl.exe`。注意 PS 传 JSON 时引号会被吃掉，**必须写成无 BOM 文件再用 `--data-binary @file`**，否则报 400 Problems parsing JSON。
+8. **CDN 直连会被 reset**（jsdelivr 等）—— 所以没有引入任何外部 JS/CSS，站点完全离线可用。
 
 ---
 
