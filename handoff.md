@@ -28,9 +28,11 @@
 
 ## 还没动 / 该补的
 
+- ✅ `复现/` 已补：可行性评估 + 三条路线方案（**但一条都没真跑**，本机无 Python、pypi ≈15 KB/s、8 GB 显存）
+- ✅ `related_work/README.md` 已补：30 篇文献索引 + 抓取命令 + 阅读顺序（**PDF 未下载**）
 - ⬜ **20+ 条「待交叉验证点」**（各章末尾）：PD 增益、`dt/decimation`、摩擦区间、WBIC 频率、HIMLoco 硬件口径、Pronto/TSIF 实际频率、cupy 在 Orin 的帧率、MPPI 可用频率、TARE/FAR 的 ROS2 状态、DAWN/StairMaster/LocoWM 的提升幅度等。
-- ⬜ **related_work/ 的 PDF**：本轮以联网核证为主，没批量下 PDF；要精读某篇时用 `fetch-paper.ps1`。
-- ⬜ **复现**：本轮不真跑 baseline（用户要的是调研），报告里给的是复现路径。
+- ⬜ **真要复现**：先装 Python 3.10+（别用 Store 版）→ 配清华镜像测速 → 跑 mujoco_playground 的 Go1 验证链路 → 再决定是否租云卡跑 legged_gym。门禁条件写在 `复现/README.md`。
+- ⬜ **DataSet/**：本轮未涉及数据集。
 - ⬜ **浏览器截图验证**：本机 Electron 不可用，index.html 只做了标签/编码校验，没做视觉验证。
 
 ---

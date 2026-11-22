@@ -33,8 +33,18 @@ report.md                      完整报告 Markdown（可在此直接阅读）
   02-perception-nav.md         状态估计、高程图、Nav2 三处腿式适配
   03-vla-and-frameworks.md     四足 VLA 落地存量、世界模型、开源框架对比
   04-industry-and-learning-path.md  九家产品、算法栈公开度、四阶段学习路径
+复现/
+  README.md                    复现状态说明 + 本机环境实测
+  00-复现可行性评估.md         逐个 baseline 的可达性判断与排序
+  01-legged_gym-复现方案.md    经典路线（受 Isaac Gym 门槛限制）
+  02-mujoco_playground-实机可行的轻量路线.md  本机唯一可能跑通的路线
+  03-isaaclab-复现方案.md      现代路线（8 GB 显存是硬伤）
+related_work/
+  README.md                    30 篇核心文献索引 + 一键抓取命令 + 阅读顺序
 tools/md2html.ps1              report.md → report.html 的转换脚本
 ```
+
+> **关于 `复现/`**：本轮**没有执行任何复现**。本机实测无 Python、pypi 约 15 KB/s、GPU 仅 8 GB，跑不动主流 baseline。目录里是可行性评估与可执行方案，不是实验结果——报告中的指标全部标注为「引自论文」。
 
 ## 方法
 
