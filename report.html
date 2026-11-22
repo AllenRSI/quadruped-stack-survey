@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>具身四足机器狗 · 全栈算法方案调研</title>
+<style>
+  :root{
+    --ink:#0A0D12; --ink2:#11161F; --line:#242E3D; --text:#E4E8EF;
+    --muted:#8A97AB; --dim:#5C6878; --amber:#E8B44A;
+    --serif:"Noto Serif SC","Source Han Serif SC","Songti SC",Georgia,serif;
+    --sans:"Inter","PingFang SC","Microsoft YaHei",-apple-system,sans-serif;
+    --mono:"JetBrains Mono","SF Mono",Consolas,monospace;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--ink);color:var(--text);font-family:var(--sans);line-height:1.85;font-size:15.5px;
+       background-image:radial-gradient(ellipse 900px 500px at 50% -10%, rgba(232,180,74,.06), transparent 70%);
+       background-repeat:no-repeat;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:860px;margin:0 auto;padding:0 28px}
+  nav{position:sticky;top:0;z-index:100;background:rgba(10,13,18,.88);backdrop-filter:blur(14px);border-bottom:1px solid var(--line)}
+  nav .wrap{display:flex;align-items:center;gap:18px;height:54px;max-width:1120px}
+  nav a{font-size:12.5px;color:var(--muted);text-decoration:none;white-space:nowrap}
+  nav a:hover{color:var(--amber)}
+  nav .brand{font-family:var(--mono);font-size:11px;letter-spacing:.14em;color:var(--dim)}
+  nav .sp{flex:1}
+  main{padding:64px 0 100px}
+  h1{font-family:var(--serif);font-size:clamp(30px,4.4vw,46px);line-height:1.25;font-weight:600;margin-bottom:34px;letter-spacing:-.01em}
+  h2{font-family:var(--serif);font-size:26px;font-weight:600;margin:56px 0 18px;padding-top:10px;border-top:1px solid var(--line);line-height:1.4}
+  h3{font-size:17px;font-weight:600;margin:34px 0 12px;color:#fff;display:flex;align-items:center;gap:10px}
+  h3::before{content:"";width:3px;height:15px;background:var(--amber);display:inline-block;flex:none}
+  h4{font-size:15px;margin:24px 0 10px;color:#fff}
+  p{margin-bottom:15px;color:#C3CBD8}
+  strong{color:#fff;font-weight:600}
+  em{color:var(--amber);font-style:normal}
+  a{color:var(--amber);text-decoration:none}
+  a:hover{text-decoration:underline}
+  code{font-family:var(--mono);font-size:.88em;background:#1A2230;padding:2px 6px;border-radius:3px;color:#9FE8DF}
+  pre{background:#11161F;border:1px solid var(--line);padding:18px 20px;overflow-x:auto;margin:18px 0;border-radius:3px}
+  pre code{background:none;padding:0;color:#B8C2D2;font-size:12.8px;line-height:1.65}
+  hr{border:none;border-top:1px solid var(--line);margin:44px 0}
+  blockquote{border-left:2px solid var(--amber);padding:4px 0 4px 20px;margin:22px 0;color:#B8C2D2;font-size:14.5px}
+  ul,ol{margin:0 0 16px 22px}
+  li{margin-bottom:7px;color:#C3CBD8}
+  .tbl{width:100%;border-collapse:collapse;font-size:13px;margin:14px 0 22px;display:block;overflow-x:auto}
+  .tbl th{text-align:left;font-family:var(--mono);font-size:10.5px;letter-spacing:.08em;color:var(--dim);
+          padding:10px 12px;border-bottom:1px solid var(--line);text-transform:uppercase;white-space:nowrap}
+  .tbl td{padding:11px 12px;border-bottom:1px solid rgba(36,46,61,.55);color:#C3CBD8;vertical-align:top;line-height:1.6}
+  .tbl tr:hover td{background:rgba(26,34,48,.45)}
+  .tbl td:first-child{color:#fff}
+  footer{border-top:1px solid var(--line);padding:40px 0 70px;color:var(--dim);font-size:12.5px}
+  @media(max-width:760px){ h2{font-size:22px} main{padding:40px 0 70px} }
+</style>
+</head>
+<body>
+<nav><div class="wrap">
+  <a class="brand" href="./index.html">QUADRUPED STACK / 2026</a>
+  <span class="sp"></span>
+  <a href="./index.html">← 返回可视化页</a>
+  <a href="./report.md">Markdown 原文</a>
+</div></nav>
+<main><div class="wrap">
+<h1>具身四足机器狗 · 全栈算法方案调研</h1>
+<p><strong>版本</strong> 2026-11 · 调研窗口 2026-11-18</p>
+<p><strong>范围</strong> 主流四足机器狗从本体到高层智能的五层算法栈</p>
+<p><strong>方法</strong> 分线联网核证 + 交叉校验；每项技术标注「真机/仿真/demo」等级</p>
+<hr>
+<h2 id="摘要">摘要</h2>
+<p>这份调研想回答一个具体问题：<strong>2026 年做一只机器狗，算法栈到底由什么组成，哪一层还有差异化空间。</strong></p>
+<p>结论是：<strong>运动控制已经不是瓶颈了，但也没有被 RL 完全取代。</strong></p>
+<ul>
+<li>2021 年 GPU 万级并行 RL 之后，L1 运动控制从研究课题变成工程配置项。用开源栈几周内就能训出一条稳定行走策略；论文口径的平地训练时间已经压到 <strong>4 分钟以内</strong>、崎岖地形 <strong>20 分钟</strong>（单卡，legged_gym，arXiv:2109.11978）。</li>
+<li>但「RL 全面取代 MPC」是话术而非事实。模型派退化成 baseline、安全兜底、混合路线里的力/轨迹生成器。产业界真正稳定的方案几乎都是混合的。</li>
+<li>上层的 VLA/世界模型在四足上<strong>远未产品化</strong>。逐个核证后，真机四足闭环跑通的公开 VLA 工作只有个位数，且几乎全部只完成单一任务。</li>
+<li>真正的差异化落在三处：<strong>感知鲁棒性</strong>（不是算法新，而是工程细）、<strong>长程任务</strong>（skill primitive 的分层设计）、<strong>交付可靠性</strong>（VLA 层的兜底与接管率）。</li>
+<hr>
+<h2 id="0-方法与可信度约定">0. 方法与可信度约定</h2>
+<p>调研里最容易犯的错，是把论文 demo 当成产品能力。所有条目统一按四档标注：</p>
+<table class="tbl"><thead><tr><th>档位</th><th>定义</th><th>例</th></tr></thead><tbody>
+<tr><td><strong>A 真机常态化</strong></td><td>产品中持续运行，有客户交付</td><td>Spot 巡检、Unitree SDK 运控、ANYmal 工业巡检</td></tr>
+<tr><td><strong>B 真机实验</strong></td><td>真机跑通，但实验室/论文条件</td><td>ANYmal 感知运动、Extreme Parkour、MoRE</td></tr>
+<tr><td><strong>C 仿真验证</strong></td><td>只在仿真/数据集上成立</td><td>多数 2025-2026 VLA 工作</td></tr>
+<tr><td><strong>D Demo 视频</strong></td><td>只有剪辑视频，无可复现细节</td><td>多数发布会演示</td></tr>
+</tbody></table>
+<p>另外约定：</p>
+<ol>
+<li>未查到的数字写「未核实」，不拿记忆当事实。</li>
+<li>论文名、年份、arXiv 号逐条核对过摘要页；本报告纠正了两处常见二手引用错误（见 §2.3）。</li>
+<li>价格、出货量标来源与时间；厂商不公开的写「未公开」。</li>
+<hr>
+<h2 id="1-五层结构">1. 五层结构</h2>
+<p>所有主流方案都能映射到这张表。<strong>层间的接口才是全栈集成的主要工作量。</strong></p>
+<table class="tbl"><thead><tr><th>层</th><th>职责</th><th>典型频率</th><th>算力</th><th>成熟度</th></tr></thead><tbody>
+<tr><td><strong>L5 任务理解</strong></td><td>语言/视觉指令 → 任务分解 → 技能调用</td><td>0.2–2 Hz</td><td>边缘 GPU / 云</td><td>🟡 研究阶段</td></tr>
+<tr><td><strong>L4 导航规划</strong></td><td>全局路径、局部避障、可通行性</td><td>10–50 Hz</td><td>CPU 单核–四核</td><td>🟢 成熟</td></tr>
+<tr><td><strong>L3 地形感知</strong></td><td>高程图/点云、落脚点评估</td><td>10–30 Hz</td><td>CPU+GPU</td><td>🟢 成熟</td></tr>
+<tr><td><strong>L2 状态估计</strong></td><td>机身位姿、速度、接触状态</td><td>200–1000 Hz</td><td>CPU 单核</td><td>🟢 成熟</td></tr>
+<tr><td><strong>L1 运动控制</strong></td><td>步态/MPC/RL → 关节指令</td><td>50–500 Hz</td><td>CPU 单核或小 NPU</td><td>🟢 高度成熟</td></tr>
+<tr><td><strong>L0 本体</strong></td><td>电机内环、IMU、编码器、足端力</td><td>1–10 kHz</td><td>MCU</td><td>🟢 商品化</td></tr>
+</tbody></table>
+<p><strong>时序是第一约束。</strong> 运控层多 10 ms 延迟实机就抖，导航层多 100 ms 基本无感。几乎所有「全栈性能问题」最终都归因到 L1/L2 的时序——这也解释了为什么厂商最核心的团队往往是运控团队。</p>
+<p><strong>层间接口的四个常见坑：</strong></p>
+<table class="tbl"><thead><tr><th>接口</th><th>消息</th><th>坑</th></tr></thead><tbody>
+<tr><td>L4 → L1</td><td>%%CODE0%%</td><td>速度超出策略训练分布，狗直接摔</td></tr>
+<tr><td>L3 → L4</td><td>高程图 → costmap</td><td>高程图噪声被当成障碍，路径抖动</td></tr>
+<tr><td>L2 → L3</td><td>位姿 → 点云配准</td><td>腿里程计漂移导致地图错层</td></tr>
+<tr><td>L5 → L4</td><td>目标位姿 / 技能 ID</td><td>语义目标落不到可通行位置</td></tr>
+</tbody></table>
+<hr>
+<h2 id="2-运动控制-L1">2. 运动控制（L1）</h2>
+<h3 id="2-1-三个派别">2.1 三个派别</h3>
+<table class="tbl"><thead><tr><th>派别</th><th>代表</th><th>机制</th><th>一次性投入</th><th>换机型成本</th><th>2026 现状</th></tr></thead><tbody>
+<tr><td><strong>模型派</strong></td><td>convex MPC、NMPC+WBC（OCS2）</td><td>简化刚体 + 在线 QP/NLP</td><td>建模+参数辨识，人力月级</td><td>重辨识、重调权重</td><td>baseline / 安全兜底</td></tr>
+<tr><td><strong>学习派</strong></td><td>legged_gym + PPO、RMA 系</td><td>万级并行仿真 + 域随机化</td><td>单卡几十分钟</td><td>重训 + 重调奖励</td><td><strong>事实标准</strong></td></tr>
+<tr><td><strong>混合派</strong></td><td>MPC 出解 + RL 残差、RL + 安全层</td><td>优化器给可行解，网络补残差</td><td>两套都要会</td><td>接口调试为主</td><td><strong>工业界主力</strong>（多闭源）</td></tr>
+</tbody></table>
+<h3 id="2-2-模型派的天花板">2.2 模型派的天花板</h3>
+<p>MIT Cheetah 3 的 convex MPC（Di Carlo 等，RA-L 2018）把四足控制写成标准 QP：预测时域 ≤0.5 s、单次求解 &lt;1 ms、控制频率 20–30 Hz，实测 3 m/s 奔跑、1 m/s 侧向、180°/s 转向。</p>
+<p>它的贡献是把四足从「调参玄学」变成「可复现的优化问题」。天花板也很清楚：<strong>模型里没建模的东西，控制器永远不会利用</strong>——尤其是非结构化地形上的落脚决策。这正是学习派切入的位置。</p>
+<h3 id="2-3-学习派的演进主线">2.3 学习派的演进主线</h3>
+<table class="tbl"><thead><tr><th>年份</th><th>工作</th><th>核心机制</th><th>解决了什么</th></tr></thead><tbody>
+<tr><td>2021</td><td><strong>RMA</strong>（arXiv:2107.04034，RSS 2021）</td><td>base policy + adaptation module，教师用特权信息，学生从本体历史回归隐变量</td><td>换地形/负载/磨损亚秒级适应，纯仿真训练、A1 零微调部署</td></tr>
+<tr><td>2022</td><td><strong>Walk These Ways</strong>（arXiv:2212.03238，<strong>CoRL 2022 Oral</strong>）</td><td>步态参数条件化单一策略</td><td>一个网络覆盖蹲行/跳/高速跑/上楼梯/抗推</td></tr>
+<tr><td>2023</td><td><strong>DreamWaQ</strong>（arXiv:2301.10602，ICRA 2023）</td><td>上下文辅助估计器 + 隐式地形想象，不走显式高程图</td><td>纯本体感受长距离穿越户外地形</td></tr>
+<tr><td>2023</td><td><strong>Robot Parkour Learning</strong>（arXiv:2309.05665，CoRL 2023 Oral）</td><td>技能生成 + 蒸馏成单一视觉策略</td><td>爬高障/跨沟/匍匐/挤缝自主切换</td></tr>
+<tr><td>2023</td><td><strong>HIM / HIMLoco</strong>（arXiv:2312.11460，<strong>首发 2023-12</strong>）</td><td>显式动力学 + 隐式编码的混合内部模型</td><td>作者称 1 小时训练出穿越任意地形、抗扰动策略</td></tr>
+<tr><td>2024</td><td><strong>H∞ Locomotion</strong>（arXiv:2404.14405）</td><td>把 H∞ 鲁棒控制做成 RL 训练目标</td><td>悬崖边缘、强外力下稳定</td></tr>
+<tr><td>2025</td><td><strong>PIP-Loco</strong>（arXiv:2409.09441，ICRA 2025）</td><td>本体感受 + 无限时域规划</td><td>缝合 MPC 的「可规划」与 RL 的「可适应」</td></tr>
+<tr><td>2026</td><td><strong>DAWN</strong>（arXiv:2609.29092，IROS 2026）</td><td>深度去噪世界模型替代手工深度滤波</td><td>解决「训练用干净深度、部署调滤波」的不可复现</td></tr>
+<tr><td>2026</td><td><strong>StairMaster</strong>（arXiv:2606.25765）</td><td>把真实深度传感器伪影做进仿真</td><td>Go2 零样本爬 55° 镂空楼梯</td></tr>
+<tr><td>2026</td><td><strong>LocoWM</strong>（arXiv:2609.39179）</td><td>世界模型做残差适应</td><td>四足上的世界模型尝试</td></tr>
+</tbody></table>
+<blockquote>两处常见二手引用错误，本报告已纠正：<strong>Walk These Ways 是 CoRL 2022 Oral</strong>（常被写成 2023）；<strong>HIM/HIMLoco 首发 2023-12</strong>（常被写成 2024）。</blockquote>
+<h3 id="2-4-sim2real-工程细节">2.4 sim2real 工程细节</h3>
+<p>这部分比论文更重要，因为<strong>落地失败几乎都发生在这里</strong>。</p>
+<p><strong>观测/动作/频率</strong></p>
+<table class="tbl"><thead><tr><th>项</th><th>常见做法</th></tr></thead><tbody>
+<tr><td>动作空间</td><td>关节位置目标 + PD 跟踪（力矩直出对电机常数、摩擦、温漂太敏感）</td></tr>
+<tr><td>观测</td><td>机身角速度、重力投影、速度指令、关节位置/速度、上一步动作、历史帧</td></tr>
+<tr><td>控制频率</td><td>策略 50 Hz，物理 200 Hz（%%CODE0%% 为社区常见配置，未逐版核实）</td></tr>
+<tr><td>PD 增益</td><td>刚度 20–100、阻尼 0.5–2 量级（具体值随机型差异大）</td></tr>
+</tbody></table>
+<p><strong>域随机化清单（按「不随机会不会挂」排序）</strong></p>
+<li>摩擦系数</li>
+<li>机身质量与质心偏移</li>
+<li>电机强度系数</li>
+<li>观测噪声与延迟</li>
+<li>动作延迟（1–3 步）</li>
+<li>地形高度场与粗糙度</li>
+<li>外力扰动（推、踢）</li>
+<p><strong>顺序很重要：先窄后宽。</strong> 一上来给大范围，策略会学成保守的龟速。</p>
+<p><strong>延迟必须当一等公民。</strong> 动作延迟 1–3 步、观测延迟、50 Hz 下的 20 ms 抖动，都要显式建模。这是「仿真里很好、实机就抖」的头号原因。</p>
+<h3 id="2-5-2025-2026-的真实前沿">2.5 2025–2026 的真实前沿</h3>
+<p>一个反直觉的结论：<strong>2025-2026 最热的两条线（动作模仿、世界模型）在四足上基本还是「搬人形的模块」。</strong></p>
+<ul>
+<li>动作模仿线（BeyondMimic arXiv:2508.08241、ASAP、HOVER）主要在人形上验证，四足尚未对等。</li>
+<li>世界模型线在腿式上<strong>唯一硬证据还是 2022 年的 DayDreamer</strong>（A1 真机 1 小时学会走路），四年无同量级后续。</li>
+<li>四足真正的新进展反倒在更工程的问题上：<strong>感知鲁棒性</strong>（DAWN 放弃手工滤波、StairMaster 把传感器伪影建进仿真）和<strong>规划时域</strong>（PIP-Loco 的无限时域）。</li>
+<h3 id="2-6-给要落地的人的五条">2.6 给要落地的人的五条</h3>
+<ol>
+<li><strong>先复现 legged_gym 或 IsaacLab 的对应 task。</strong> 平地 20 分钟出策略是入场券；复现不出来是奖励或观测有 bug。</li>
+<li><strong>动作空间选关节位置目标 + PD。</strong> 力矩直出是给自己找麻烦。</li>
+<li><strong>把延迟当一等公民。</strong></li>
+<li><strong>RMA 式历史 + 特权蒸馏是性价比最高的鲁棒性来源</strong>，HIM 的显式+隐式混合是合理升级。</li>
+<li><strong>视觉路线先把深度噪声建模做对。</strong> 训练用干净深度、部署靠手工滤波，是最常见的不可复现原因。</li>
+<hr>
+<h2 id="3-状态估计-地形感知与导航-L2-L4">3. 状态估计、地形感知与导航（L2–L4）</h2>
+<h3 id="3-1-一句话结论">3.1 一句话结论</h3>
+<p><strong>四足全栈里最容易低估的是状态估计，最容易过度设计的是导航。</strong></p>
+<p>90% 的实机翻车发生在「腿式里程计漂了 5 分钟之后，高程图错了 20 cm」，而不是规划器不够聪明。</p>
+<h3 id="3-2-为什么四足的状态估计比轮式-人形都难">3.2 为什么四足的状态估计比轮式/人形都难</h3>
+<p>腿既是传感器又是执行器，接触状态每一毫秒都在变，而所有「零速假设」类观测在高动态下失效。</p>
+<table class="tbl"><thead><tr><th>难点</th><th>机理</th><th>后果</th></tr></thead><tbody>
+<tr><td><strong>飞行相/腾空</strong></td><td>小跑/跳跃时无足端接触，腿部里程计没有观测</td><td>基座高度不可观。Cerberus 团队明确：含 flight phase 时 SOTA 方法无法可靠估计姿态，<strong>尤其 base height</strong>（arXiv:2210.02127）</td></tr>
+<tr><td><strong>足端打滑</strong></td><td>leg odometry 假设支撑足相对世界速度为零</td><td>冰面/碎石/泥地直接崩；足端 GRF 传感器对「接触但打滑」不敏感（arXiv:2606.05501）</td></tr>
+<tr><td><strong>IMU 饱和/零偏漂移</strong></td><td>落足冲击打满量程；bias 随温度与冲击历史漂移</td><td>姿态数秒内线性发散</td></tr>
+<tr><td><strong>视觉退化</strong></td><td>运动模糊、rolling shutter、低纹理、逆光；冲击破坏 camera-IMU 同步</td><td>VIO 在纯旋转/匀速段尺度退化</td></tr>
+</tbody></table>
+<p><strong>工程含义：不要指望单一估计器，必须做退化检测 + 模态切换。</strong></p>
+<h3 id="3-3-四条路线与失效模式">3.3 四条路线与失效模式</h3>
+<table class="tbl"><thead><tr><th>方案</th><th>频率</th><th>精度（量级）</th><th>传感器成本</th><th><strong>主要失效场景</strong></th></tr></thead><tbody>
+<tr><td>Contact-aided InEKF / Pronto</td><td>200–1000 Hz</td><td>短时好，长时漂（分钟级米级）</td><td>极低</td><td>打滑、飞行相、接触误判</td></tr>
+<tr><td>VIO（VINS-Fusion/OpenVINS）</td><td>20–60 Hz</td><td>中，尺度易退化</td><td>中</td><td>运动模糊、低纹理、光照突变</td></tr>
+<tr><td>VILO 紧耦合（VILENS/Cerberus）</td><td>10–50 Hz</td><td>好</td><td>中高</td><td>视觉与 LiDAR 同时退化</td></tr>
+<tr><td>LIO（FAST-LIO2/Point-LIO）</td><td>10–50 Hz</td><td>好（结构丰富场景）</td><td>高</td><td>长廊/隧道几何退化、动态物体、雨雾</td></tr>
+<tr><td>Learned leg odometry</td><td>50–200 Hz</td><td>依赖训练分布</td><td>低</td><td>分布外地形</td></tr>
+</tbody></table>
+<p><strong>正确架构：contact-aided EKF 提供高频鲁棒主干（跟随 IMU，200–1000 Hz）+ VIO/LIO 只做低频漂移校正（10–60 Hz），外加退化检测。</strong></p>
+<h3 id="3-4-高程图-四足的-中间语言">3.4 高程图：四足的「中间语言」</h3>
+<p>高程图是事实标准，因为它同时喂得动运控（落脚点）和导航（代价地图）。<strong>难点不在建图，在「什么算可通行」。</strong></p>
+<table class="tbl"><thead><tr><th>方案</th><th>表示</th><th>频率</th><th>算力</th><th>适用</th></tr></thead><tbody>
+<tr><td><strong>elevation_mapping_cupy</strong></td><td>2.5D 高度图 + 多语义层</td><td>10–30 Hz</td><td>Jetson 级 GPU</td><td>ANYmal 系/腿式运控；默认 resolution 0.1 m、map_length 20 m</td></tr>
+<tr><td><strong>grid_map</strong></td><td>多层 2.5D 栅格</td><td>10–30 Hz</td><td>1–2 CPU 核</td><td>与 ROS 生态最紧，有官方 costmap 桥</td></tr>
+<tr><td><strong>nvblox</strong></td><td>TSDF/ESDF 体素</td><td>10–30 Hz</td><td>NVIDIA GPU</td><td>3D 连续表示，适合楼梯/悬空障碍</td></tr>
+</tbody></table>
+<p><strong>可通行性的两层做法：</strong></p>
+<ul>
+<li>几何法（必做基线）：坡度、台阶高差、粗糙度 + unknown 保守处理。阈值需实测标定。</li>
+<li>学习法（2024–2026 主流）：高程图 patch + 本体感受历史，回归「这一步踩下去会不会滑/卡」，输出连续代价。</li>
+<li><strong>反面教材</strong>：雪、植被、水面在视觉上「像不可踩障碍」，或者干脆没有回波——这是野外感知型运动控制的主要失败源（Miki 等，arXiv:2201.08117）。</li>
+<p><strong>盲走 vs 视觉不是二选一。</strong> 盲走在平地、缓坡、已知台阶上并不差，没有感知延迟与误检风险；差距只在负障碍、高台、稀疏障碍、乱石地。工程结论是<strong>双模并存 + 按地形置信度切换</strong>。</p>
+<h3 id="3-5-Nav2-能用到什么程度">3.5 Nav2 能用到什么程度</h3>
+<p>Nav2 能承担 2.5D 的全局/局部导航，但<strong>三处腿式适配必须自己做</strong>，否则就是一台跑得很快的轮式机器人。</p>
+<table class="tbl"><thead><tr><th>局部控制器</th><th>频率</th><th>优点</th><th>四足上的坑</th></tr></thead><tbody>
+<tr><td><strong>MPPI</strong></td><td>20–50 Hz</td><td>处理非线性/动态障碍最好，参数直观</td><td>算力随 batch×steps 线性涨；默认 critics 偏向贴路径，要加摆动余量约束</td></tr>
+<tr><td><strong>DWB</strong></td><td>20–50 Hz</td><td>轻、稳、好调</td><td>窄缝/高代价区易卡死，对地形起伏无感知</td></tr>
+<tr><td><strong>TEB</strong></td><td>10–20 Hz</td><td>轨迹平滑、多拓扑</td><td>Nav2 官方不含；ROS2 端口社区维护，兼容性差</td></tr>
+</tbody></table>
+<p><strong>三处适配：</strong></p>
+<ol>
+<li><strong>3D 感知 → 2.5D 代价</strong>：用 STVL 替代 2D obstacle layer，吃下 3D 点云并做体素衰减。</li>
+<li><strong>分辨率对齐</strong>：0.1 m 高程图喂 0.05 m costmap 时，双线性插值会把台阶抹成「假缓坡」，必须最近邻 + 形态学膨胀。</li>
+<li><strong>footprint 用支撑多边形</strong>（站立四点凸包）而非整机包络，否则窄缝全过不去；%%CODE0%% 按「机身半宽 + 一个步长」取。</li>
+<h3 id="3-6-分层频率与算力">3.6 分层频率与算力</h3>
+<table class="tbl"><thead><tr><th>层</th><th>频率</th><th>算力</th></tr></thead><tbody>
+<tr><td>IMU/编码器/足端</td><td>200–1000 Hz</td><td>—</td></tr>
+<tr><td>状态估计（腿式 EKF）</td><td>200–1000 Hz</td><td>&lt;1 CPU 核</td></tr>
+<tr><td>VIO/LIO</td><td>10–60 Hz</td><td>1–4 核 / 一路 GPU</td></tr>
+<tr><td>高程图</td><td>10–30 Hz</td><td>Orin GPU 10–20%</td></tr>
+<tr><td>可通行性 / 代价层</td><td>10–30 Hz</td><td>1 核</td></tr>
+<tr><td>全局规划</td><td>1–5 Hz</td><td>&lt;1 核</td></tr>
+<tr><td>局部控制（MPPI）</td><td>20–50 Hz</td><td>1–2 核</td></tr>
+<tr><td>运控策略 / WBC</td><td>50–200 Hz</td><td>1 核 / GPU</td></tr>
+</tbody></table>
+<h3 id="3-7-整合时最常踩的四个坑">3.7 整合时最常踩的四个坑</h3>
+<li><strong>时间同步</strong>：高程图用了几十毫秒前的位姿 → 地图拖影，越走越歪。必须把位姿插值到点云时间戳。</li>
+<li><strong>协方差造假</strong>：%%CODE0%% 发 100 Hz 但协方差全写 1e-6，下游会把漂移当真理。</li>
+<li><strong>分辨率不一致</strong>：见上。</li>
+<li><strong>Nav2 的平面假设</strong>：坡度只能压进 cost，真 3D 落脚必须由运控层解决——两套系统要明确「谁负责台阶」。</li>
+<hr>
+<h2 id="4-高层智能-VLA-与世界模型-L5">4. 高层智能：VLA 与世界模型（L5）</h2>
+<h3 id="4-1-直白结论">4.1 直白结论</h3>
+<p><strong>四足与 VLA 的真实关系是：用 VLA 做语义导航和高层任务，用 RL 做一切和平衡、地形、速度有关的事。</strong></p>
+<p>把「真机四足 + 高层语义输入 + 闭环」三条同时满足的公开工作筛出来，只有个位数：</p>
+<table class="tbl"><thead><tr><th>工作</th><th>本体</th><th>等级</th><th>备注</th></tr></thead><tbody>
+<tr><td><strong>From Tabletop to Walking Bot</strong>（arXiv:2610.32271，2026-10）</td><td>Go2 + AgileX Piper</td><td><strong>A/B</strong></td><td>唯一完整闭环的 loco-manipulation，只讲落地取舍</td></tr>
+<tr><td><strong>DR-VLA</strong>（arXiv:2610.18373，2026-10）</td><td>户外配送四足</td><td>B</td><td>2000 段遥操作 + 1 万小时人视频，闭环程度待核</td></tr>
+<tr><td><strong>TrackVLA++</strong>（arXiv:2510.07134）</td><td>四足</td><td>B</td><td>具身视觉跟踪</td></tr>
+<tr><td><strong>Uni-NaVid</strong>（arXiv:2412.06224）</td><td>四足</td><td>B</td><td>最接近通用导航策略的公开工作</td></tr>
+<tr><td><strong>NaVid</strong>（arXiv:2402.15852）</td><td>四足</td><td>B</td><td>首个无需地图/里程计/深度的 VLN</td></tr>
+<tr><td><strong>MoRE</strong>（arXiv:2503.08007，2025-03）</td><td>四足</td><td>B</td><td>多 LoRA 专家 + RL 微调 VLA</td></tr>
+<tr><td><strong>ODYSSEY</strong>（arXiv:2508.08240，2025-08）</td><td>四足 + 机械臂</td><td>B</td><td>长程开放世界探索与操作</td></tr>
+</tbody></table>
+<blockquote><strong>SayTap</strong>（arXiv:2306.07580，Go1）常被归入这一类，但它不是 VLA——它是 LLM 输出足端接触模式，没有视觉-语言-动作的联合建模。</blockquote>
+<h3 id="4-2-为什么四足-VLA-比机械臂难一个量级">4.2 为什么四足 VLA 比机械臂难一个量级</h3>
+<p>机械臂 VLA 可以 5–10 Hz 直出末端增量，因为底座不动、动力学慢。四足不行：机身欠驱动，任何 1 Hz 级指令都必须由 50 Hz 策略去实现、由 500 Hz–1 kHz 的关节 PD 去跟踪。</p>
+<p>所以四足的 VLA 输出<strong>必然是抽象的</strong>：航点、速度指令、skill 选择、接触模式。</p>
+<p><strong>谁声称 VLA 直出四足 12 维关节且效果好，基本可以直接怀疑。</strong></p>
+<p>工程上唯一可行的架构是分层：</p>
+<pre><code>VLM/VLA（0.5–5 Hz）  看画面 → 语义目标 / skill 名 / 航点
+      ↓
+skill primitive 层（10–50 Hz）  航点跟踪、视觉伺服、抓取位姿
+      ↓
+运动策略（50 Hz，RL policy）  速度指令 → 关节目标
+      ↓
+关节 PD（500 Hz–1 kHz，SDK 层）  力矩/位置闭环 + 安全裁剪</code></pre>
+<h3 id="4-3-世界模型的真实位置">4.3 世界模型的真实位置</h3>
+<ul>
+<li><strong>DayDreamer</strong>（arXiv:2206.14244，2022）：A1 真机约 1 小时学会走路，是腿式上唯一像样的证据，四年无同量级后续。</li>
+<li><strong>Cosmos</strong>（NVIDIA，2025-01）：定位是数据工厂，给 GR00T 一类模型造训练数据，不是控制器。</li>
+<li><strong>Genie 3</strong>（2025-08）：720p/24fps、分钟级一致性的可交互世界生成，闭源无公开 API，与四足控制无任何公开结合。</li>
+<li><strong>V-JEPA 2</strong>、<strong>DreamerV3</strong>：作为表征/预测模块有潜力，但没有四足上的公开闭环结果。</li>
+<p><strong>结论：世界模型在四足上目前的作用是「补数据」和「辅助预测目标」，不是策略本身。</strong></p>
+<h3 id="4-4-开源框架-只有一个值得押注">4.4 开源框架：只有一个值得押注</h3>
+<table class="tbl"><thead><tr><th>框架</th><th>star（2026-11-18 实测）</th><th>维护状态</th><th>评价</th></tr></thead><tbody>
+<tr><td><strong>IsaacLab</strong></td><td>8.7k</td><td>当天仍有提交，tag v3.0.0</td><td><strong>唯一推荐</strong>，生态都在围着它转</td></tr>
+<tr><td><strong>rsl_rl</strong></td><td>3.1k</td><td>2026-11-17 提交</td><td>PPO + teacher-student 事实标准</td></tr>
+<tr><td><strong>mujoco_playground</strong></td><td>2.3k</td><td>2026-11-17 提交</td><td>无 NVIDIA 依赖的替代，MJX 加速</td></tr>
+<tr><td><strong>legged_gym</strong></td><td>—</td><td><strong>停更约 18 个月</strong>（2025-05-29）</td><td>别用，只读 reward 设计</td></tr>
+<tr><td><strong>unitree_rl_gym</strong></td><td>—</td><td><strong>停更约 16 个月</strong>（2025-07-25）</td><td>别用，同上</td></tr>
+<tr><td><strong>LeRobot</strong></td><td>29k</td><td>活跃</td><td><strong>四足支持为零</strong>，star 数不等于相关度</td></tr>
+<tr><td><strong>unitree_sdk2</strong></td><td>—</td><td>活跃</td><td>真机通信层，必装</td></tr>
+<tr><td><strong>OCS2</strong></td><td>—</td><td>活跃</td><td>走 MPC 路线时的首选</td></tr>
+</tbody></table>
+<p><strong>两个陷阱：</strong></p>
+<ol>
+<li>legged_gym 和 unitree_rl_gym 都锁死在 NVIDIA 已弃更的 Isaac Gym Preview 4 上。star 多、教程多，但新项目引入就是技术债。</li>
+<li>LeRobot 29k star，但没有任何四足开箱接口。用 star 数判断相关度会翻车。</li>
+<hr>
+<h2 id="5-产业方案">5. 产业方案</h2>
+<h3 id="5-1-产品全景">5.1 产品全景</h3>
+<table class="tbl"><thead><tr><th>厂商</th><th>机型（发布）</th><th>关键参数</th><th>感知/算力</th><th>价格</th></tr></thead><tbody>
+<tr><td><strong>Unitree</strong></td><td>Go2（2023-07）</td><td>~15 kg，0–2.5/3.5/3.7 m/s（峰值 5），负载 7–8 kg</td><td>标配 4D LiDAR，8 核 CPU，EDU 开放 SDK</td><td><strong>9,997 元起</strong>（2025-08）</td></tr>
+<tr><td><strong>Unitree</strong></td><td>A2（2025-08）</td><td>~42 kg，5 m/s，180 N·m，负载 25 kg</td><td>双工业 LiDAR + HD 相机，i7</td><td>未公开（第三方 4.8 万，未核实）</td></tr>
+<tr><td><strong>Unitree</strong></td><td>As2（2026-02）</td><td>~20 kg，&gt;5 m/s，站立负载 65 kg，IP54</td><td>8 核 CPU + ISS 3.0 跟随</td><td>Contact Sales</td></tr>
+<tr><td><strong>Unitree</strong></td><td>B2（2023-11）</td><td>~60 kg，&gt;6 m/s，站立负载 120 kg</td><td>工业接口丰富</td><td>未公开</td></tr>
+<tr><td><strong>云深处</strong></td><td>绝影 X30（2023-10）</td><td>56 kg，≥4 m/s，负载 85 kg，45° 坡</td><td><strong>4 台激光雷达</strong>，双主机</td><td>未公开</td></tr>
+<tr><td><strong>云深处</strong></td><td>X50（2026-11）</td><td>50 kg 额定负载下 3 m/s 跑 2 km</td><td>感控融合</td><td>未公开</td></tr>
+<tr><td><strong>Boston Dynamics</strong></td><td>Spot（商用 2020）</td><td>载荷 20.4 kg，IP54，~90 min</td><td>立体相机，全外挂</td><td><strong>15 万–37.5 万美元/套</strong>（公开采购记录）</td></tr>
+<tr><td><strong>ANYbotics</strong></td><td>ANYmal X / D</td><td>工业巡检，ATEX 防爆</td><td>激光+视觉+热成像</td><td>约 20 万美元（第三方估算）</td></tr>
+<tr><td><strong>智元</strong></td><td>D1 系列（2025-08）</td><td>消费级</td><td>—</td><td><strong>1.3 万元起</strong></td></tr>
+<tr><td><strong>维他动力</strong></td><td>大头 BoBo（2025-12）</td><td>消费级，无需遥控</td><td>—</td><td><strong>9,988 元</strong></td></tr>
+</tbody></table>
+<h3 id="5-2-算法栈公开程度-谁真给了东西">5.2 算法栈公开程度：谁真给了东西</h3>
+<p><strong>最高：云深处。</strong> 2026-10-28 官方发布 DEEPRobotics-Brain 五件套（世界模型 DR-WM-1.0、VLA-2.0、DR-Agent、DR-APO、DR-Benchmark），带数据规模与七校合作，是国产四足里唯一能当技术路线图读的材料——<strong>但只给方法，不给代码权重</strong>。</p>
+<p><strong>最低：维他动力、众擎。</strong> 公开信息全是产品叙事，零算法细节。选型时按黑盒整机对待。</p>
+<p>一个值得注意的规律：<strong>「公开算法栈」和「卖得好」几乎负相关。</strong> 卖得最多的宇树只开源工具链、云深处只发论文不给代码。</p>
+<h3 id="5-3-商业模式">5.3 商业模式</h3>
+<ul>
+<li><strong>巡检</strong>是唯一规模化落地的场景：电力、隧道、化工。云深处自认行业端四足出货全球第一，但全国 1 万+ 变电站只做了 200+ 个项目——<strong>渗透率仍是个位数百分比</strong>。</li>
+<li><strong>科研教育</strong>是宇树的现金牛，Go2 官方价 9,997 元起（2025-08）。</li>
+<li><strong>安防、娱乐表演</strong>是品牌曝光，不是可持续收入。</li>
+<li><strong>To-Developer 的 SDK 生态</strong>才是长期护城河，也是评价一家公司的关键指标。</li>
+<h3 id="5-4-2025-2026-趋势">5.4 2025–2026 趋势</h3>
+<ol>
+<li>硬件差距被抹平到「同一代器件、不同价格带」。<strong>买谁的狗，越来越取决于 SDK 和售后，而不是参数表。</strong></li>
+<li>从「炫技 demo」转向「可靠性交付」。客户问的是 MTBF 和接管率，不是后空翻。</li>
+<li>资本层面进入整合期：宇树 2025 营收近 17 亿元、2026-06-01 上会；云深处 2025-12 Pre-IPO 数亿元、2026-05 完成辅导。</li>
+<hr>
+<h2 id="6-选型建议">6. 选型建议</h2>
+<h3 id="6-1-按目标分三条路">6.1 按目标分三条路</h3>
+<p><strong>A. 要做产品（12 个月内交付）</strong></p>
+<pre><code>L1: IsaacLab 训 RL 策略，导出 ONNX，真机 PD 跟踪
+L2: 厂商自带状态估计，不够再加腿里程计融合
+L3: 深度相机 + elevation mapping（仅在需要爬楼梯/避障时上）
+L4: ROS2 Nav2 + MPPI
+L5: 不做。用现成 VLM API 包一层任务分发，人兜底</code></pre>
+<p><strong>别碰 VLA 端到端。</strong> 收益不确定，风险确定。</p>
+<p><strong>B. 要做研究（找空白）</strong></p>
+<p>真正的空白在 <strong>skill primitive + 长程任务</strong>的交界：怎么把 RL 训出来的运动技能抽象成可组合、可验证、可恢复的原子能力，再让上层模型去编排。这个问题在四足上没人做好，且不需要重新发明运动控制。</p>
+<p><strong>C. 要入门</strong></p>
+<p>按 §7 的四阶段走。</p>
+<h3 id="6-2-硬件与算力选型">6.2 硬件与算力选型</h3>
+<table class="tbl"><thead><tr><th>场景</th><th>推荐</th><th>理由</th></tr></thead><tbody>
+<tr><td>科研/教学</td><td>Unitree Go2 EDU</td><td>9,997 元起，SDK 生态最全，社区问题最多人答</td></tr>
+<tr><td>工业巡检</td><td>云深处 X30 / X50</td><td>四激光雷达 + 双主机（运控/感知分离）</td></tr>
+<tr><td>高负载</td><td>Unitree B2 / A2</td><td>60 kg 级，120 kg 站立负载</td></tr>
+<tr><td>极限可靠性</td><td>Boston Dynamics Spot</td><td>贵（15 万–37.5 万美元/套），但交付确定性最高</td></tr>
+</tbody></table>
+<p><strong>机载算力：</strong> Jetson Orin NX（100 TOPS）够跑 L1–L4；要上 L5 需要 Orin AGX 或外挂算力盒。</p>
+<hr>
+<h2 id="7-学习路径">7. 学习路径</h2>
+<table class="tbl"><thead><tr><th>阶段</th><th>有基础</th><th>纯新手</th><th>产出</th></tr></thead><tbody>
+<tr><td><strong>1 数学与控制基础</strong></td><td>4 周</td><td>10 周</td><td>MuJoCo 手写单腿 VMC 弹跳</td></tr>
+<tr><td><strong>2 仿真训练跑通</strong></td><td>6 周</td><td>8 周</td><td>盲走平地+坡道策略，MuJoCo sim2sim 不摔</td></tr>
+<tr><td><strong>3 实机部署</strong></td><td>6–8 周</td><td>10 周</td><td>实机 10 分钟不摔、上 15° 坡、扛一次踢腿</td></tr>
+<tr><td><strong>4 高层智能</strong></td><td>8 周</td><td>10 周</td><td>语言指令「去 B 区看阀门」并自主到达</td></tr>
+</tbody></table>
+<p><strong>总计：有基础 5–6 个月，纯新手 10–12 个月。</strong></p>
+<p><strong>阶段 1 必读</strong>：Raibert《Legged Robots That Balance》第 1–3 章；Bledt 等 MIT Cheetah 3（IROS 2018）；Di Carlo 等 convex MPC（IROS 2018，重点读 QP 形式化）；arXiv:1901.08652；arXiv:1812.11103。</p>
+<p><strong>阶段 2 必读</strong>：arXiv:2109.11978（legged_gym 母论文，必精读）；arXiv:2108.10470（Isaac Gym）；arXiv:2212.03238；arXiv:2107.04034（RMA）；arXiv:2201.08117；arXiv:2301.10671（DreamWaQ）。</p>
+<p><strong>阶段 3 关键认知</strong>：<strong>90% 的实机摔不是策略问题，是状态估计与时间同步问题</strong>——IMU 延迟、关节零位偏差、控制频率抖动。先量这三样，再怀疑网络。</p>
+<p><strong>阶段 4 现实预期</strong>：这一层在四足上是「Demo 级可靠、产品级不可靠」。跑通一次就够，别指望稳。</p>
+<hr>
+<h2 id="8-争议与未解问题">8. 争议与未解问题</h2>
+<li><strong>RL 是否真的取代了 MPC？</strong> 没有。工业界是混合的，模型派在安全兜底和力/轨迹生成上仍不可替代。</li>
+<li><strong>VLA 该不该直接上狗？</strong> 目前唯一可行的是分层。端到端直出关节的声称，都该要求可复现证据。</li>
+<li><strong>世界模型能带来什么？</strong> 短期是数据增强和预测辅助，不是策略替代。</li>
+<li><strong>没有 benchmark。</strong> 四足领域缺跨地形、跨本体的公认评测基准，导致论文数字横向不可比。这也是「宣传」容易奏效的结构性原因。</li>
+<li><strong>数据缺口是结构性的。</strong> 四足的遥操作数据采集成本远高于机械臂，且没有大规模开源数据集对标 Open X-Embodiment。</li>
+<hr>
+<h2 id="9-本报告的不确定性">9. 本报告的不确定性</h2>
+<ul>
+<li>频率、算力、价格均为量级估计，具体以引用来源为准。</li>
+<li>2026 年的部分进展依赖预印本，未经同行评审。</li>
+<li>产业数据（出货量、融资）变动快，均标查证时间。</li>
+<li>各章末尾列有「待交叉验证点」，共 20+ 条，是下一步该补的洞。</li>
+
+</div></main>
+<footer><div class="wrap">
+  调研时间 2026-11 · 数据以正文标注来源为准 · 预印本内容未经同行评审
+</div></footer>
+</body>
+</html>
