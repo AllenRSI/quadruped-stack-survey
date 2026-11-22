@@ -6,8 +6,8 @@
 
 ## 在线浏览
 
-- **[可视化调研页](https://<owner>.github.io/quadruped-stack-survey/)** — 五层栈图、范式时间线、宣传 vs 真机矩阵、产业对比
-- **[完整报告（HTML）](https://<owner>.github.io/quadruped-stack-survey/report.html)** — 1.4 万字长文，16 张对比表
+- **[可视化调研页](https://allenrsi.github.io/quadruped-stack-survey/)** — 五层栈图、范式时间线、宣传 vs 真机矩阵、产业对比
+- **[完整报告（HTML）](https://allenrsi.github.io/quadruped-stack-survey/report.html)** — 1.4 万字长文，16 张对比表
 - [Markdown 原文](report.md)
 
 ## 结论速览
