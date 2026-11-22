@@ -1,0 +1,15 @@
+{
+  "mode": "trot",
+  "vx_target": 0.4,
+  "duration_s": 10.0,
+  "fell": false,
+  "fell_at_s": null,
+  "mean_vx": -0.124,
+  "vx_rmse": 0.584,
+  "mean_height": 0.1875,
+  "height_std": 0.0213,
+  "max_abs_roll_deg": 42.4,
+  "max_abs_pitch_deg": 17.4,
+  "n_samples": 500,
+  "total_mass": 11.2
+}

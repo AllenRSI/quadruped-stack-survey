@@ -1,0 +1,15 @@
+{
+  "mode": "stand",
+  "vx_target": 0.0,
+  "duration_s": 6.0,
+  "fell": false,
+  "fell_at_s": null,
+  "mean_vx": -0.05,
+  "vx_rmse": 0.107,
+  "mean_height": 0.2648,
+  "height_std": 0.0102,
+  "max_abs_roll_deg": 4.5,
+  "max_abs_pitch_deg": 7.7,
+  "n_samples": 300,
+  "total_mass": 11.2
+}

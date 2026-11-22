@@ -1,26 +1,33 @@
 # 复现目录说明
 
-> **状态：本轮未执行任何复现。** 这里放的是可行性评估与可执行方案，不是实验结果。
+> **状态：已执行 1 项（模型派控制器，部分成功），其余仍是方案。**
+> 复现记录：[mpc/README.md](mpc/README.md) — 站立成功、小跑失败，失败原因已定位到方法层面。
 > 最后更新：2026-11-22
 
 ---
 
-## 为什么是空的
+## 实际跑起来的（WSL2 + MuJoCo）
 
-不是遗漏，是这轮任务的定位问题——我把它定成了「调研」，所以 `handoff.md` 里写的是「本轮不真跑 baseline」。但按 research-workflow 的规矩，**复现应该排在提假设之前**，这个目录空着确实是个缺口。现在补上。
-
-补的方式是「评估 + 方案」而不是「假装跑过」，因为本机环境实测跑不动：
-
-| 项 | 实测结果 | 影响 |
+| 项 | 结果 | 说明 |
 |---|---|---|
-| GPU | NVIDIA RTX 3060 Ti，8192 MiB，driver 610.88 | 能跑小规模，但 4096 环境的默认配置扛不住 |
-| Python | **未安装**（`python` 只是 Windows Store 占位别名，执行即失败） | 一切 Python 生态不可用 |
-| pip / conda / uv | 全无 | 需要先装 Python |
-| pypi 连通性 | `pypi.org/simple/` 20 秒只收到 307 KB（≈15 KB/s） | 装 PyTorch（~2 GB）需 30+ 小时，实际不可行 |
-| 磁盘 | C 盘剩余 80.7 GB | 够 IsaacLab + Isaac Sim（约 30 GB），但显存不够 |
-| Isaac Gym 获取 | 需 NVIDIA 开发者账号登录下载 | 无法自动化拉取 |
+| [mpc/](mpc/README.md) 12 DOF 四足力控 | **站立成功，行走失败** | 自建 MJCF + 力分配 + 关节 PD；站立 6 s 不摔（高 0.265 m，滚转 4.5°），小跑 10 s 不摔但走不动（净速度 −0.12 m/s，高度下陷 8.7 cm） |
+| legged_gym | ❌ 未执行 | Isaac Gym 需 NVIDIA 账号下载 |
+| mujoco_playground | ❌ 未完成 | 依赖下载 12 GB 后停滞 |
 
-**结论：本机在当前网络下无法完成任何一条主流的四足运控复现。**
+## 环境实测（更新：WSL2 补齐了缺的东西）
+
+Windows 侧确实没有 Python。后来改用 WSL2 Ubuntu，条件就齐了：
+
+| 项 | Windows 侧 | WSL2 Ubuntu（实际使用） |
+|---|---|---|
+| Python | 未安装（Store 占位别名） | **3.12.16**（uv + NJU 镜像装） |
+| 包管理 | 无 pip/conda/uv | uv 已装 |
+| GPU | 3060 Ti 8 GB | 直通可用，driver 610.88 |
+| pypi | ≈15 KB/s | 清华镜像 → **可用** |
+| github.com | 通但不稳 | **不通**，只能走 GitHub API / PyPI 镜像 |
+| 磁盘 | 80.7 GB 剩余 | 215 GB 剩余 |
+
+**结论：WSL2 下能够真正跑复现。** 实际跑通的是 MuJoCo 路线（见上表）。Isaac Gym 仍卡在需 NVIDIA 账号登录下载；mujoco_playground 卡在 12 GB 依赖下载停滞。
 
 ---
 
@@ -28,10 +35,17 @@
 
 | 文件 | 是什么 |
 |---|---|
+| [mpc/](mpc/README.md) | **实际执行**：12 DOF 四足力控，站立成功 / 行走失败，含代码与日志 |
 | [00-复现可行性评估.md](00-复现可行性评估.md) | 逐个 baseline 的硬件/时间/风险评估，含排序建议 |
 | [01-legged_gym-复现方案.md](01-legged_gym-复现方案.md) | 经典路线，最值得跑，但受 Isaac Gym 门槛限制 |
-| [02-mujoco_playground-实机可行的轻量路线.md](02-mujoco_playground-实机可行的轻量路线.md) | **本机唯一有可能跑通的路**（只要能解决网络） |
+| [02-mujoco_playground-实机可行的轻量路线.md](02-mujoco_playground-实机可行的轻量路线.md) | 轻量路线（注意：实际依赖比预期重很多） |
 | [03-isaaclab-复现方案.md](03-isaaclab-复现方案.md) | 现代路线，长期该走，但 8 GB 显存是硬伤 |
+
+---
+
+## 底部说明（原「为什么是空的」，保留存档）
+
+按 research-workflow 的规矩，**复现应该排在提假设之前**。最初这个目录空着，是因为把任务定成了「调研」。后来补上了：先写方案，再在 WSL 里真跑了一项。
 
 ---
 
