@@ -1,0 +1,19 @@
+{
+  "mode": "trot",
+  "vx_target": 0.4,
+  "duration_s": 10.0,
+  "fell": true,
+  "fell_at_s": 3.146,
+  "mean_vx": 0.376,
+  "vx_rmse": 0.495,
+  "mean_height": 0.2711,
+  "height_std": 0.0239,
+  "max_abs_roll_deg": 121.0,
+  "max_abs_pitch_deg": 35.1,
+  "mpc_solve_ms_mean": 3.57,
+  "mpc_solve_ms_max": 10.75,
+  "qp_status": "solved",
+  "tau_sign": -1.0,
+  "n_samples": 32,
+  "total_mass": 11.2
+}

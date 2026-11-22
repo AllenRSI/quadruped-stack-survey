@@ -1,0 +1,19 @@
+{
+  "mode": "stand",
+  "vx_target": 0.0,
+  "duration_s": 6.0,
+  "fell": false,
+  "fell_at_s": null,
+  "mean_vx": -0.014,
+  "vx_rmse": 0.025,
+  "mean_height": 0.2717,
+  "height_std": 0.002,
+  "max_abs_roll_deg": 5.0,
+  "max_abs_pitch_deg": 4.5,
+  "mpc_solve_ms_mean": 3.99,
+  "mpc_solve_ms_max": 6.12,
+  "qp_status": "solved",
+  "tau_sign": -1.0,
+  "n_samples": 60,
+  "total_mass": 11.2
+}
