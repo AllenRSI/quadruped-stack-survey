@@ -28,7 +28,7 @@
 
 ## 还没动 / 该补的
 
-- ✅ `复现/` 已补：可行性评估 + 三条路线方案（**但一条都没真跑**，本机无 Python、pypi ≈15 KB/s、8 GB 显存）
+- ✅ `复现/` 已补并**真跑了一项**：WSL2 + MuJoCo 的 12 DOF 力控，站立成功（高 0.265 m，滚转 4.5°）/ 小跑失败（净速度 -0.12 m/s）。失败原因：缺 WBC 分层与滚动时域。详见 `复现/mpc/README.md`
 - ✅ `related_work/README.md` 已补：30 篇文献索引 + 抓取命令 + 阅读顺序（**PDF 未下载**）
 - ⬜ **20+ 条「待交叉验证点」**（各章末尾）：PD 增益、`dt/decimation`、摩擦区间、WBIC 频率、HIMLoco 硬件口径、Pronto/TSIF 实际频率、cupy 在 Orin 的帧率、MPPI 可用频率、TARE/FAR 的 ROS2 状态、DAWN/StairMaster/LocoWM 的提升幅度等。
 - ⬜ **真要复现**：先装 Python 3.10+（别用 Store 版）→ 配清华镜像测速 → 跑 mujoco_playground 的 Go1 验证链路 → 再决定是否租云卡跑 legged_gym。门禁条件写在 `复现/README.md`。
