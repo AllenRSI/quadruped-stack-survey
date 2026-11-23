@@ -563,7 +563,7 @@
       <tr><td>已停更</td><td class="mono">VINS-Fusion / elevation_mapping</td><td>4.8k / 1.9k</td><td><span class="m-d">2024 年停更，别进新产品</span></td></tr>
     </tbody>
   </table>
-  <div class="note"><b>「全栈」的边界：</b><span class="mono">navigation2</span> 和 <span class="mono">robot_navigation</span> 覆盖「costmap + 规划 + 控制 + 恢复」，可称 2D 导航全栈；但<b>不含定位，也不含运动控制</b>——拿到四足上只占 L4 一层。</div>
+  <div class="note"><b>「全栈」的边界：</b>Nav2 的 <span class="mono">nav2_bringup</span> 含 <span class="mono">nav2_amcl</span> + <span class="mono">map_server</span> + 规划 + 控制，连 2D 定位都给全了；<span class="mono">robot_navigation</span> 不含定位。但两者<b>都不含运动控制</b>——拿到四足上最多占 L2(2D) + L4。</div>
   <div class="note"><b>推荐组合：</b><span class="mono">robot_localization + 腿里程计 + elevation_mapping_cupy + Nav2(MPPI+STVL) + 自研 RL 运控</span></div>
 
   <h3>VLN / VLA 导航：基准完整，真机稀少</h3>

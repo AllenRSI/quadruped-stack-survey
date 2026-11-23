@@ -404,7 +404,7 @@ L5: 不做。用现成 VLM API 包一层任务分发，人兜底
 
 ### 8.1 传统分层栈：2D 有打包全栈，四足没有
 
-**先厘清「全栈」**：`navigation2`（5.1k star）和 `robot_navigation`（480 star，ROS1 `navigation` 的继任者）都自带 costmap + 全局/局部规划 + 恢复行为，**是打包好的 2D 导航全栈**。但它们不含定位，更不含运动控制——拿到四足上只占 L4 一层。
+**先厘清「全栈」**：`navigation2`（5.1k star）自带 `nav2_bringup`（含 `nav2_amcl` + `map_server` + 规划 + 控制 + 恢复），`robot_navigation`（480 star，ROS1 `navigation` 的继任者）自带 DWB + dlux + locomove —— **两者都是打包好的 2D 导航栈，Nav2 连定位都包含**。但它们不含运动控制，拿到四足上最多占 L2(2D) + L4。
 
 | 层 | 事实标准仓库 | star | 状态 |
 |---|---|---|---|

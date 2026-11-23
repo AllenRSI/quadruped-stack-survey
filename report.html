@@ -344,7 +344,7 @@ L5: 不做。用现成 VLM API 包一层任务分发，人兜底</code></pre>
 <h2 id="8-开源方案清单-2026-11-23-实查">8. 开源方案清单（2026-11-23 实查）</h2>
 <blockquote>完整版见 <a href="调研/05-开源方案清单.md">调研/05-开源方案清单.md</a>。这里只给结论。</blockquote>
 <h3 id="8-1-传统分层栈-2D-有打包全栈-四足没有">8.1 传统分层栈：2D 有打包全栈，四足没有</h3>
-<p><strong>先厘清「全栈」</strong>：%%CODE0%%（5.1k star）和 %%CODE0%%（480 star，ROS1 %%CODE0%% 的继任者）都自带 costmap + 全局/局部规划 + 恢复行为，<strong>是打包好的 2D 导航全栈</strong>。但它们不含定位，更不含运动控制——拿到四足上只占 L4 一层。</p>
+<p><strong>先厘清「全栈」</strong>：%%CODE0%%（5.1k star）自带 %%CODE0%%（含 %%CODE0%% + %%CODE0%% + 规划 + 控制 + 恢复），%%CODE0%%（480 star，ROS1 %%CODE0%% 的继任者）自带 DWB + dlux + locomove —— <strong>两者都是打包好的 2D 导航栈，Nav2 连定位都包含</strong>。但它们不含运动控制，拿到四足上最多占 L2(2D) + L4。</p>
 <table class="tbl"><thead><tr><th>层</th><th>事实标准仓库</th><th>star</th><th>状态</th></tr></thead><tbody>
 <tr><td>状态估计</td><td>%%CODE0%% / %%CODE0%% / %%CODE0%%</td><td>5.4k / 1.4k / 636</td><td>活跃（Point-LIO 2026-06）</td></tr>
 <tr><td>融合骨架</td><td>%%CODE0%%</td><td>2.0k</td><td>活跃</td></tr>
