@@ -398,7 +398,44 @@ L5: 不做。用现成 VLM API 包一层任务分发，人兜底
 
 ---
 
-## 8. 争议与未解问题
+## 8. 开源方案清单（2026-11-23 实查）
+
+> 完整版见 [调研/05-开源方案清单.md](调研/05-开源方案清单.md)。这里只给结论。
+
+### 8.1 传统分层栈：可拼装，无全栈
+
+| 层 | 事实标准仓库 | star | 状态 |
+|---|---|---|---|
+| 状态估计 | `FAST-LIO` / `Point-LIO` / `open3d_slam` | 5.4k / 1.4k / 636 | 活跃（Point-LIO 2026-06） |
+| 融合骨架 | `robot_localization` | 2.0k | 活跃 |
+| 高程图 | `elevation_mapping_cupy` | 1.2k | 活跃（2026-10） |
+| 2.5D 栅格 | `grid_map` | 3.3k | 活跃 |
+| 导航 | `navigation2` + `STVL` | 5.1k / 889 | 活跃 |
+| 探索 | `tare_planner` / `far_planner` / `m-explore-ros2` | 753 / 1.0k / 427 | 仍以 ROS1 为主 |
+
+**推荐组合**：`robot_localization` + 腿里程计 + `elevation_mapping_cupy` + Nav2(MPPI+STVL) + 自研 RL 运控。
+
+**已停更、别进新产品**：`VINS-Fusion`（2024-05）、`elevation_mapping`（2024-11）。
+
+### 8.2 VLN / VLA 导航：基准完整，真机稀少
+
+| 项目 | 仓库 | star | 真机 | 说明 |
+|---|---|---|---|---|
+| **NaVILA** | `AnjieCheng/NaVILA` | 736 | **✅ 四足** | **唯一四足真机跑通的开源 VLN**；VLM 出中层指令 + RL 执行 |
+| NaVid / Uni-NaVid | `jzhzhang/NaVid-VLN-CE`、`jzhzhang/Uni-NaVid` | 462 / 368 | 仿真为主 | 视频级 VLM 直接出动作 |
+| StreamVLN | `Sage-PhysicalAI/StreamVLN` | 646 | 部分 | 慢快双流，长视频流式推理 |
+| Open-Nav | `YanyuanQiao/Open-Nav` | 192 | 室内 | 零样本，无需训练 |
+| InstructNav | `LYX0501/InstructNav` | 216 | 室内 | 动态生成导航函数 |
+| GNM/ViNT/NoMaD | `robodhruv/visualnav-transformer` | 1.4k | — | 视觉导航底座，**已停更**（2024-09） |
+| 评测基准 | `facebookresearch/habitat-lab` + `jacobkrantz/VLN-CE` | 3.2k / 906 | — | VLN 的标准仿真与评测 |
+
+**结论：产品走分层，研究走 VLN。** 两者不是替代关系——NaVILA 本质也是分层的，只是把「导航规划」换成了 VLM。
+
+**许可证提醒**：FAST-LIO / VINS-Fusion / OpenVINS 是 **GPL**，商用需注意；StreamVLN、InstructNav 未声明许可证。
+
+---
+
+## 9. 争议与未解问题
 
 1. **RL 是否真的取代了 MPC？** 没有。工业界是混合的，模型派在安全兜底和力/轨迹生成上仍不可替代。
 2. **VLA 该不该直接上狗？** 目前唯一可行的是分层。端到端直出关节的声称，都该要求可复现证据。
@@ -408,7 +445,7 @@ L5: 不做。用现成 VLM API 包一层任务分发，人兜底
 
 ---
 
-## 9. 本报告的不确定性
+## 10. 本报告的不确定性
 
 - 频率、算力、价格均为量级估计，具体以引用来源为准。
 - 2026 年的部分进展依赖预印本，未经同行评审。

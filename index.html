@@ -175,6 +175,7 @@
     <a href="#s7">VLA 与框架</a>
     <a href="#s8">产业方案</a>
     <a href="#s9">选型建议</a>
+    <a href="#s10">开源清单</a>
     <a href="./report.html" style="color:var(--amber)">完整报告 ↗</a>
   </div>
 </div></nav>
@@ -541,6 +542,44 @@
 
   <div class="pull">如果你的目标是「把狗卖出去」，阶段 1–3 走完就够；如果你的目标是「研究」，阶段 2 与 4 的交界才是 2026 年真正空白的坑。</div>
 
+</div></section>
+
+<section id="s10"><div class="wrap">
+  <div class="snum">10 — 开源清单</div>
+  <h2>传统分层 vs VLN：<br>各自能直接 clone 什么</h2>
+  <p class="sub">全部在 2026-11-23 通过 GitHub API 实查 star / 最后 push / license。只列能真的跑起来的仓库。</p>
+
+  <h3>传统分层栈：可拼装，但没有全栈</h3>
+  <table class="tbl">
+    <thead><tr><th>层</th><th>事实标准仓库</th><th>star</th><th>状态</th></tr></thead>
+    <tbody>
+      <tr><td>状态估计</td><td class="mono">FAST_LIO / Point-LIO / open3d_slam</td><td>5.4k / 1.4k / 636</td><td><span class="m-a">活跃</span></td></tr>
+      <tr><td>融合骨架</td><td class="mono">robot_localization</td><td>2.0k</td><td><span class="m-a">活跃</span></td></tr>
+      <tr><td>高程图</td><td class="mono">elevation_mapping_cupy</td><td>1.2k</td><td><span class="m-a">活跃 2026-10</span></td></tr>
+      <tr><td>2.5D 栅格</td><td class="mono">grid_map</td><td>3.3k</td><td><span class="m-a">活跃</span></td></tr>
+      <tr><td>导航</td><td class="mono">navigation2 + STVL</td><td>5.1k / 889</td><td><span class="m-a">活跃</span></td></tr>
+      <tr><td>探索</td><td class="mono">tare_planner / far_planner</td><td>753 / 1.0k</td><td><span class="m-b">仍以 ROS1 为主</span></td></tr>
+      <tr><td>已停更</td><td class="mono">VINS-Fusion / elevation_mapping</td><td>4.8k / 1.9k</td><td><span class="m-d">2024 年停更，别进新产品</span></td></tr>
+    </tbody>
+  </table>
+  <div class="note"><b>推荐组合：</b><span class="mono">robot_localization + 腿里程计 + elevation_mapping_cupy + Nav2(MPPI+STVL) + 自研 RL 运控</span></div>
+
+  <h3>VLN / VLA 导航：基准完整，真机稀少</h3>
+  <table class="tbl">
+    <thead><tr><th>项目</th><th>仓库</th><th>star</th><th>真机</th><th>说明</th></tr></thead>
+    <tbody>
+      <tr><td>NaVILA</td><td class="mono">AnjieCheng/NaVILA</td><td>736</td><td><span class="m-a">✅ 四足</span></td><td>唯一四足真机跑通的开源 VLN；VLM 出中层指令 + RL 执行</td></tr>
+      <tr><td>NaVid / Uni-NaVid</td><td class="mono">jzhzhang/NaVid-VLN-CE</td><td>462 / 368</td><td><span class="m-b">仿真为主</span></td><td>视频级 VLM 直接出动作</td></tr>
+      <tr><td>StreamVLN</td><td class="mono">Sage-PhysicalAI/StreamVLN</td><td>646</td><td><span class="m-b">部分</span></td><td>慢快双流，长视频流式推理</td></tr>
+      <tr><td>Open-Nav</td><td class="mono">YanyuanQiao/Open-Nav</td><td>192</td><td><span class="m-b">室内</span></td><td>零样本，无需训练</td></tr>
+      <tr><td>GNM/ViNT/NoMaD</td><td class="mono">robodhruv/visualnav-transformer</td><td>1.4k</td><td>—</td><td>视觉导航底座，<span class="m-d">已停更 2024-09</span></td></tr>
+      <tr><td>评测基准</td><td class="mono">habitat-lab + VLN-CE</td><td>3.2k / 906</td><td>—</td><td>VLN 的标准仿真与评测</td></tr>
+    </tbody>
+  </table>
+
+  <div class="pull">产品走分层，研究走 VLN。两者不是替代关系——NaVILA 本质也是分层的，只是把「导航规划」换成了 VLM。</div>
+
+  <div class="note"><b>许可证提醒：</b>FAST-LIO / VINS-Fusion / OpenVINS 是 <b>GPL</b>，商用需注意；StreamVLN、InstructNav 未声明许可证，商用前必须问作者。</div>
 </div></section>
 
 <footer><div class="wrap">

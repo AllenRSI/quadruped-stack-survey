@@ -33,6 +33,7 @@ report.md                      完整报告 Markdown（可在此直接阅读）
   02-perception-nav.md         状态估计、高程图、Nav2 三处腿式适配
   03-vla-and-frameworks.md     四足 VLA 落地存量、世界模型、开源框架对比
   04-industry-and-learning-path.md  九家产品、算法栈公开度、四阶段学习路径
+05-开源方案清单.md 传统分层栈 vs VLN 的开源仓库实测清单（27 个仓库）
 复现/
   README.md                    复现状态说明 + 本机环境实测
   00-复现可行性评估.md         逐个 baseline 的可达性判断与排序

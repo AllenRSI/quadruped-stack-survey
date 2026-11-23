@@ -341,14 +341,40 @@ L5: 不做。用现成 VLM API 包一层任务分发，人兜底</code></pre>
 <p><strong>阶段 3 关键认知</strong>：<strong>90% 的实机摔不是策略问题，是状态估计与时间同步问题</strong>——IMU 延迟、关节零位偏差、控制频率抖动。先量这三样，再怀疑网络。</p>
 <p><strong>阶段 4 现实预期</strong>：这一层在四足上是「Demo 级可靠、产品级不可靠」。跑通一次就够，别指望稳。</p>
 <hr>
-<h2 id="8-争议与未解问题">8. 争议与未解问题</h2>
+<h2 id="8-开源方案清单-2026-11-23-实查">8. 开源方案清单（2026-11-23 实查）</h2>
+<blockquote>完整版见 <a href="调研/05-开源方案清单.md">调研/05-开源方案清单.md</a>。这里只给结论。</blockquote>
+<h3 id="8-1-传统分层栈-可拼装-无全栈">8.1 传统分层栈：可拼装，无全栈</h3>
+<table class="tbl"><thead><tr><th>层</th><th>事实标准仓库</th><th>star</th><th>状态</th></tr></thead><tbody>
+<tr><td>状态估计</td><td>%%CODE0%% / %%CODE0%% / %%CODE0%%</td><td>5.4k / 1.4k / 636</td><td>活跃（Point-LIO 2026-06）</td></tr>
+<tr><td>融合骨架</td><td>%%CODE0%%</td><td>2.0k</td><td>活跃</td></tr>
+<tr><td>高程图</td><td>%%CODE0%%</td><td>1.2k</td><td>活跃（2026-10）</td></tr>
+<tr><td>2.5D 栅格</td><td>%%CODE0%%</td><td>3.3k</td><td>活跃</td></tr>
+<tr><td>导航</td><td>%%CODE0%% + %%CODE0%%</td><td>5.1k / 889</td><td>活跃</td></tr>
+<tr><td>探索</td><td>%%CODE0%% / %%CODE0%% / %%CODE0%%</td><td>753 / 1.0k / 427</td><td>仍以 ROS1 为主</td></tr>
+</tbody></table>
+<p><strong>推荐组合</strong>：%%CODE0%% + 腿里程计 + %%CODE0%% + Nav2(MPPI+STVL) + 自研 RL 运控。</p>
+<p><strong>已停更、别进新产品</strong>：%%CODE0%%（2024-05）、%%CODE0%%（2024-11）。</p>
+<h3 id="8-2-VLN-VLA-导航-基准完整-真机稀少">8.2 VLN / VLA 导航：基准完整，真机稀少</h3>
+<table class="tbl"><thead><tr><th>项目</th><th>仓库</th><th>star</th><th>真机</th><th>说明</th></tr></thead><tbody>
+<tr><td><strong>NaVILA</strong></td><td>%%CODE0%%</td><td>736</td><td><strong>✅ 四足</strong></td><td><strong>唯一四足真机跑通的开源 VLN</strong>；VLM 出中层指令 + RL 执行</td></tr>
+<tr><td>NaVid / Uni-NaVid</td><td>%%CODE0%%、%%CODE0%%</td><td>462 / 368</td><td>仿真为主</td><td>视频级 VLM 直接出动作</td></tr>
+<tr><td>StreamVLN</td><td>%%CODE0%%</td><td>646</td><td>部分</td><td>慢快双流，长视频流式推理</td></tr>
+<tr><td>Open-Nav</td><td>%%CODE0%%</td><td>192</td><td>室内</td><td>零样本，无需训练</td></tr>
+<tr><td>InstructNav</td><td>%%CODE0%%</td><td>216</td><td>室内</td><td>动态生成导航函数</td></tr>
+<tr><td>GNM/ViNT/NoMaD</td><td>%%CODE0%%</td><td>1.4k</td><td>—</td><td>视觉导航底座，<strong>已停更</strong>（2024-09）</td></tr>
+<tr><td>评测基准</td><td>%%CODE0%% + %%CODE0%%</td><td>3.2k / 906</td><td>—</td><td>VLN 的标准仿真与评测</td></tr>
+</tbody></table>
+<p><strong>结论：产品走分层，研究走 VLN。</strong> 两者不是替代关系——NaVILA 本质也是分层的，只是把「导航规划」换成了 VLM。</p>
+<p><strong>许可证提醒</strong>：FAST-LIO / VINS-Fusion / OpenVINS 是 <strong>GPL</strong>，商用需注意；StreamVLN、InstructNav 未声明许可证。</p>
+<hr>
+<h2 id="9-争议与未解问题">9. 争议与未解问题</h2>
 <li><strong>RL 是否真的取代了 MPC？</strong> 没有。工业界是混合的，模型派在安全兜底和力/轨迹生成上仍不可替代。</li>
 <li><strong>VLA 该不该直接上狗？</strong> 目前唯一可行的是分层。端到端直出关节的声称，都该要求可复现证据。</li>
 <li><strong>世界模型能带来什么？</strong> 短期是数据增强和预测辅助，不是策略替代。</li>
 <li><strong>没有 benchmark。</strong> 四足领域缺跨地形、跨本体的公认评测基准，导致论文数字横向不可比。这也是「宣传」容易奏效的结构性原因。</li>
 <li><strong>数据缺口是结构性的。</strong> 四足的遥操作数据采集成本远高于机械臂，且没有大规模开源数据集对标 Open X-Embodiment。</li>
 <hr>
-<h2 id="9-本报告的不确定性">9. 本报告的不确定性</h2>
+<h2 id="10-本报告的不确定性">10. 本报告的不确定性</h2>
 <ul>
 <li>频率、算力、价格均为量级估计，具体以引用来源为准。</li>
 <li>2026 年的部分进展依赖预印本，未经同行评审。</li>
