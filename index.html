@@ -549,7 +549,7 @@
   <h2>传统分层 vs VLN：<br>各自能直接 clone 什么</h2>
   <p class="sub">全部在 2026-11-23 通过 GitHub API 实查 star / 最后 push / license。只列能真的跑起来的仓库。</p>
 
-  <h3>传统分层栈：可拼装，但没有全栈</h3>
+  <h3>传统分层栈：2D 有打包全栈，四足没有</h3>
   <table class="tbl">
     <thead><tr><th>层</th><th>事实标准仓库</th><th>star</th><th>状态</th></tr></thead>
     <tbody>
@@ -557,11 +557,13 @@
       <tr><td>融合骨架</td><td class="mono">robot_localization</td><td>2.0k</td><td><span class="m-a">活跃</span></td></tr>
       <tr><td>高程图</td><td class="mono">elevation_mapping_cupy</td><td>1.2k</td><td><span class="m-a">活跃 2026-10</span></td></tr>
       <tr><td>2.5D 栅格</td><td class="mono">grid_map</td><td>3.3k</td><td><span class="m-a">活跃</span></td></tr>
-      <tr><td>导航</td><td class="mono">navigation2 + STVL</td><td>5.1k / 889</td><td><span class="m-a">活跃</span></td></tr>
+      <tr><td>导航（ROS2）</td><td class="mono">navigation2 + STVL</td><td>5.1k / 889</td><td><span class="m-a">打包全栈</span></td></tr>
+      <tr><td>导航（ROS1）</td><td class="mono">locusrobotics/robot_navigation</td><td>480</td><td><span class="m-b">打包全栈，但只 2D</span></td></tr>
       <tr><td>探索</td><td class="mono">tare_planner / far_planner</td><td>753 / 1.0k</td><td><span class="m-b">仍以 ROS1 为主</span></td></tr>
       <tr><td>已停更</td><td class="mono">VINS-Fusion / elevation_mapping</td><td>4.8k / 1.9k</td><td><span class="m-d">2024 年停更，别进新产品</span></td></tr>
     </tbody>
   </table>
+  <div class="note"><b>「全栈」的边界：</b><span class="mono">navigation2</span> 和 <span class="mono">robot_navigation</span> 覆盖「costmap + 规划 + 控制 + 恢复」，可称 2D 导航全栈；但<b>不含定位，也不含运动控制</b>——拿到四足上只占 L4 一层。</div>
   <div class="note"><b>推荐组合：</b><span class="mono">robot_localization + 腿里程计 + elevation_mapping_cupy + Nav2(MPPI+STVL) + 自研 RL 运控</span></div>
 
   <h3>VLN / VLA 导航：基准完整，真机稀少</h3>
